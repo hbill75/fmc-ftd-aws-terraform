@@ -1,12 +1,20 @@
 # Require TF version to be same as or greater than 0.12.19
 terraform {
   required_version = ">=0.12.28"
+
+  backend "s3" {
+    bucket         = "fmc-ftd-state-bucket-13972486"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "aws-locks"
+    encrypt        = true
+  }
 }
 
 # Download AWS provider
 provider "aws" {
   region  = "us-east-1"
-  version = "~= 3.3.0"
+  version = "~>3.3.0"
 }
 
 # Terraform bootstrapping
@@ -20,7 +28,7 @@ module "bootstrap" {
   aws_iam_policy_assume_name  = "IamPolicyAssume"
 }
 
-
+/*
 # Create VPC
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_subnet
@@ -29,6 +37,7 @@ resource "aws_vpc" "main" {
     "Name" = var.vpc_name
   }
 }
+ */
 
 /*
 locals {
@@ -36,6 +45,7 @@ locals {
 }
  */
 
+/*
 # Create Internet Gateway
 
 resource "aws_internet_gateway" "internet_gateway" {
@@ -45,7 +55,9 @@ resource "aws_internet_gateway" "internet_gateway" {
     "Name" = "${var.vpc_name} Internet Gateway"
   }
 }
+ */
 
+/*
 # Create Subnets
 
 resource "aws_subnet" "outside_subnets" {
@@ -80,8 +92,9 @@ resource "aws_subnet" "management_subnets" {
     "Name" = "${var.vpc_name} Management Subnet"
   }
 }
+ */
 
-
+/*
 # Create "Allow Internal Networks" Security Group
 
 resource "aws_security_group" "allow_internal_networks" {
@@ -146,7 +159,9 @@ resource "aws_default_security_group" "default" {
     "Name" = "Allow SSH/HTTPS"
   }
 }
+ */
 
+/*
 resource "aws_network_interface" "management_interfaces" {
 
   subnet_id         = aws_subnet.management_subnets.id
@@ -157,6 +172,7 @@ resource "aws_network_interface" "management_interfaces" {
     "Name" = "FTD Management Interface"
   }
 }
+ */
 
 /*
 resource "aws_network_interface" "outside_interfaces" {
@@ -231,6 +247,8 @@ resource "aws_nat_gateway" "management_nat_gateway" {
   }
 }
  */
+
+/*
 # Create Management Route Table
 
 resource "aws_route_table" "route_table_management" {
@@ -250,6 +268,7 @@ resource "aws_route_table_association" "route_table_association_management" {
   subnet_id      = aws_subnet.management_subnets.id
   route_table_id = aws_route_table.route_table_management.id
 }
+ */
 
 /*
 # Create Outside Route Table
