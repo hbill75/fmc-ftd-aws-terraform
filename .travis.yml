@@ -46,8 +46,8 @@ jobs:
 
       script:
         # Check if terraform fmt correct. If not, fail validation
-        - echo "Validating Terraform fmt"
-        - terraform fmt -recursive -check
+        # - echo "Validating Terraform fmt"
+        # - terraform fmt -recursive -check
 
         - echo "Pull request detected, creating change plan"
 
