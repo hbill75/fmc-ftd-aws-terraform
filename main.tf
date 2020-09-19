@@ -156,7 +156,7 @@ resource "aws_network_interface" "management_interfaces" {
   source_dest_check = false
 
   tags = {
-    "Name" = "FTD Management Interface"
+    "Name" = "FMC Management Interface"
   }
 }
 
