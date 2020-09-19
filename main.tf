@@ -41,6 +41,7 @@ resource "aws_vpc" "main" {
 locals {
   vpc_network_bits  = tonumber(split("/", var.vpc_subnet)[1])
 }
+*/
 
 # Create Internet Gateway
 resource "aws_internet_gateway" "internet_gateway" {
@@ -159,6 +160,7 @@ resource "aws_network_interface" "management_interfaces" {
   }
 }
 
+/*
 resource "aws_network_interface" "outside_interfaces" {
   count = var.availability_zone_count * var.instances_per_az
 
@@ -222,6 +224,7 @@ resource "aws_nat_gateway" "management_nat_gateway" {
     "Name" = "ASAv Management NAT Gateway ${count.index + 1}"
   }
 }
+*/
 
 # Create Management Route Table
 resource "aws_route_table" "route_table_management" {
@@ -231,17 +234,20 @@ resource "aws_route_table" "route_table_management" {
     "Name" = "${var.vpc_name} Management Route Table"
   }
 }
+
 resource "aws_route" "default_route" {
   route_table_id         = aws_route_table.route_table_management.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.internet_gateway.id
 }
+
 resource "aws_route_table_association" "route_table_association_management" {
 
   subnet_id      = aws_subnet.management_subnets.id
   route_table_id = aws_route_table.route_table_management.id
 }
 
+/*
 # Create Outside Route Table
 resource "aws_route_table" "route_table_outside" {
   vpc_id = aws_vpc.main.id
