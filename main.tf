@@ -28,8 +28,8 @@ module "bootstrap" {
   aws_iam_policy_assume_name  = "IamPolicyAssume"
 }
 
+/*
 # Create VPC
-
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_subnet
 
@@ -38,15 +38,11 @@ resource "aws_vpc" "main" {
   }
 }
 
-/*
 locals {
   vpc_network_bits  = tonumber(split("/", var.vpc_subnet)[1])
 }
- */
 
-/*
 # Create Internet Gateway
-
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.main.id
 
@@ -54,11 +50,8 @@ resource "aws_internet_gateway" "internet_gateway" {
     "Name" = "${var.vpc_name} Internet Gateway"
   }
 }
- */
 
-/*
 # Create Subnets
-
 resource "aws_subnet" "outside_subnets" {
 
   vpc_id            = aws_vpc.main.id
@@ -91,11 +84,8 @@ resource "aws_subnet" "management_subnets" {
     "Name" = "${var.vpc_name} Management Subnet"
   }
 }
- */
 
-/*
 # Create "Allow Internal Networks" Security Group
-
 resource "aws_security_group" "allow_internal_networks" {
   name        = "Allow Internal Networks"
   description = "Security Group to allow internal traffic"
@@ -120,9 +110,7 @@ resource "aws_security_group" "allow_internal_networks" {
   }
 }
 
-
 # Create "Allow SSH/HTTPS" Security Group
-
 resource "aws_default_security_group" "default" {
   vpc_id = aws_vpc.main.id
 
@@ -158,9 +146,8 @@ resource "aws_default_security_group" "default" {
     "Name" = "Allow SSH/HTTPS"
   }
 }
- */
 
-/*
+# Create network interfaces
 resource "aws_network_interface" "management_interfaces" {
 
   subnet_id         = aws_subnet.management_subnets.id
@@ -171,9 +158,7 @@ resource "aws_network_interface" "management_interfaces" {
     "Name" = "FTD Management Interface"
   }
 }
- */
 
-/*
 resource "aws_network_interface" "outside_interfaces" {
   count = var.availability_zone_count * var.instances_per_az
 
@@ -196,11 +181,8 @@ resource "aws_network_interface" "inside_interfaces" {
     "Name" = "FMC Inside Interface ${count.index + 1}"
   }
 }
- */
 
-/*
 # Create EIPs
-
 resource "aws_eip" "management_eip" {
 
   vpc        = true
@@ -216,9 +198,7 @@ resource "aws_eip_association" "management_eip_association" {
   network_interface_id = aws_network_interface.management_interfaces.id
   allocation_id        = aws_eip.management_eip.id
 }
- */
 
-/*
 resource "aws_eip" "nat_gateway_eips" {
   count = var.availability_zone_count
 
@@ -229,11 +209,8 @@ resource "aws_eip" "nat_gateway_eips" {
     "Name" = "ASAv Management NAT ${count.index + 1}"
   }
 }
- */
 
-/*
 # Create NAT Gateway
-
 resource "aws_nat_gateway" "management_nat_gateway" {
   count = var.availability_zone_count
 
@@ -245,11 +222,8 @@ resource "aws_nat_gateway" "management_nat_gateway" {
     "Name" = "ASAv Management NAT Gateway ${count.index + 1}"
   }
 }
- */
 
-/*
 # Create Management Route Table
-
 resource "aws_route_table" "route_table_management" {
   vpc_id = aws_vpc.main.id
 
@@ -267,11 +241,8 @@ resource "aws_route_table_association" "route_table_association_management" {
   subnet_id      = aws_subnet.management_subnets.id
   route_table_id = aws_route_table.route_table_management.id
 }
- */
 
-/*
 # Create Outside Route Table
-
 resource "aws_route_table" "route_table_outside" {
   vpc_id = aws_vpc.main.id
 
@@ -279,6 +250,7 @@ resource "aws_route_table" "route_table_outside" {
     "Name" = "${var.vpc_name} Outside Route Table"
   }
 }
+
 resource "aws_route" "default_route" {
   route_table_id         = aws_route_table.route_table_outside.id
   destination_cidr_block = "0.0.0.0/0"
@@ -290,11 +262,8 @@ resource "aws_route_table_association" "route_table_association_outside" {
   subnet_id      = aws_subnet.outside_subnets[count.index].id
   route_table_id = aws_route_table.route_table_outside.id
 }
- */
 
-/*
-# Create Inside Route Table
-
+# Create Inside Route Table\
 resource "aws_route_table" "route_table_inside" {
   vpc_id = aws_vpc.main.id
 
@@ -302,6 +271,7 @@ resource "aws_route_table" "route_table_inside" {
     "Name" = "${var.vpc_name} Inside Route Table"
   }
 }
+
 resource "aws_route" "inside_vpn_pool_routes" {
   count = var.availability_zone_count * var.instances_per_az
 
@@ -309,6 +279,7 @@ resource "aws_route" "inside_vpn_pool_routes" {
   destination_cidr_block = cidrsubnet(var.vpn_pool_supernet, (local.vpn_network_bits - var.ip_pool_size_bits[var.instance_size]), count.index)
   network_interface_id   = aws_network_interface.inside_interfaces[count.index].id
 }
+
 resource "aws_route" "inside_internal_routes" {
   count = length(var.internal_networks)
 
@@ -316,17 +287,15 @@ resource "aws_route" "inside_internal_routes" {
   destination_cidr_block = var.internal_networks[count.index]
   transit_gateway_id     = aws_ec2_transit_gateway.transit_gateway.id
 }
+
 resource "aws_route_table_association" "route_table_association_inside" {
   count = length(aws_subnet.inside_subnets)
 
   subnet_id      = aws_subnet.inside_subnets[count.index].id
   route_table_id = aws_route_table.route_table_inside.id
 }
- */
 
-/*
 # Create Management Route Table
-
 resource "aws_route_table" "management_route_tables" {
   count = var.availability_zone_count
 
@@ -340,6 +309,7 @@ resource "aws_route_table" "management_route_tables" {
     "Name" = "${var.vpc_name} Management Route Table ${count.index + 1}"
   }
 }
+
 resource "aws_route" "management_internal_routes" {
   count = var.availability_zone_count * length(var.internal_networks)
 
@@ -347,17 +317,15 @@ resource "aws_route" "management_internal_routes" {
   destination_cidr_block = var.internal_networks[count.index % length(var.internal_networks)]
   transit_gateway_id     = aws_ec2_transit_gateway.transit_gateway.id
 }
+
 resource "aws_route_table_association" "route_rable_association_management" {
   count = length(aws_subnet.management_subnets)
 
   subnet_id      = aws_subnet.management_subnets[count.index].id
   route_table_id = aws_route_table.management_route_tables[count.index].id
 }
- */
 
-/*
 # Fiters to get the most recent BYOL ASAv image
-
 data "aws_ami" "cisco_fmc_lookup" {
   most_recent = true
 
@@ -368,11 +336,8 @@ data "aws_ami" "cisco_fmc_lookup" {
 
   owners = ["500641172016"]
 }
- */
 
-/*
 # Generate a random password
-
 resource "random_password" "password" {
   length  = 40
   special = true
@@ -381,11 +346,8 @@ resource "random_password" "password" {
     command = "echo \"${random_password.password.result}\" > password.txt"
   }
 }
- */
 
-/*
 # Set up the ASA configuration file
-
 data "template_file" "asa_config" {
   count = var.availability_zone_count * var.instances_per_az
 
@@ -404,20 +366,14 @@ data "template_file" "asa_config" {
     throughput_level       = lookup(var.throughput_level, var.instance_size, "1G")
   }
 }
-*/
 
-/*
 # Set up the ASA configuration file
-
 data "template_file" "fmc_config" {
 
   template   = file("fmc_config.txt")
 }
- */
 
-/*
 # Create FMC Instance
-
 resource "aws_instance" "fmc1" {
 
   ami           = "ami-04c5e5e4f84fa7087"
@@ -434,11 +390,8 @@ resource "aws_instance" "fmc1" {
     network_interface_id = aws_network_interface.management_interfaces.id
   }
 }
- */
 
-/*
 # Create ASAv Instance
-
 resource "aws_instance" "asav" {
   count = var.availability_zone_count * var.instances_per_az
 
@@ -465,9 +418,7 @@ resource "aws_instance" "asav" {
     network_interface_id = aws_network_interface.inside_interfaces[count.index].id
   }
 }
- */
 
-/*
 output "inside_ips" {
   value = aws_network_interface.inside_interfaces.*.private_ip
 }
@@ -477,4 +428,4 @@ output "management_ips" {
 output "outside_ips" {
   value = aws_eip.outside_eips.*.public_ip
 }
- */
+*/
