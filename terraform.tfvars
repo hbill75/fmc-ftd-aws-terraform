@@ -6,7 +6,7 @@ vpc_subnet = "10.1.0.0/21"
 
 // Scalability
 availability_zone_count = 1
-instances_per_az = 1
+instances_per_az        = 1
 
 // Licensing
 smart_account_token = ""
