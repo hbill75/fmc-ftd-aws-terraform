@@ -224,6 +224,7 @@ resource "aws_nat_gateway" "management_nat_gateway" {
     "Name" = "ASAv Management NAT Gateway ${count.index + 1}"
   }
 }
+*/
 
 # Create Management Route Table
 resource "aws_route_table" "route_table_management" {
@@ -246,6 +247,7 @@ resource "aws_route_table_association" "route_table_association_management" {
   route_table_id = aws_route_table.route_table_management.id
 }
 
+/*
 # Create Outside Route Table
 resource "aws_route_table" "route_table_outside" {
   vpc_id = aws_vpc.main.id
