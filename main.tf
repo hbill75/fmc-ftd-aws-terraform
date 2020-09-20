@@ -28,6 +28,7 @@ module "bootstrap" {
   aws_iam_policy_assume_name  = "IamPolicyAssume"
 }
 
+/*
 # Create VPC
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_subnet
@@ -37,7 +38,6 @@ resource "aws_vpc" "main" {
   }
 }
 
-/*
 locals {
   vpc_network_bits  = tonumber(split("/", var.vpc_subnet)[1])
 }
