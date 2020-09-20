@@ -29,6 +29,9 @@ env:
     # Set terraform apply CLI options - https://www.terraform.io/docs/commands/apply.html
     - tf_apply_cli_options=" -auto-approve -input=false"
 
+    # Sets the TFLint version
+    - tflint_version=0.20.1
+
 jobs:
   include:
     - stage: terraform plan
@@ -36,14 +39,17 @@ jobs:
       # Terraform Plan: As part of a pull request or kicked off by an API
       if: type IN (pull_request, api)
       
-      before_install:
-        - sudo apt-get -y install zip unzip
-      
       install:
-        # Download and install terraform before each ru
+        # Download and install terraform before each run
+        - sudo apt-get -y install zip unzip
         - wget https://releases.hashicorp.com/terraform/"$tf_version"/terraform_"$tf_version"_linux_amd64.zip
         - unzip terraform_"$tf_version"_linux_amd64.zip
         - sudo mv terraform /usr/local/bin/
+
+        # Download and install TFLint
+        - curl -L https://github.com/terraform-linters/tflint/releases/download/v"$tflint_version"/tflint_linux_amd64.zip -o tflint.zip
+        - unzip tflint.zip
+        - sudo mv tflint /usr/local/bin
 
       before_script:
         # Check if terraform fmt correct. If not, fail validation
@@ -55,6 +61,11 @@ jobs:
         # Terraform init, validate, then create change plan. If any fail, fail validation
         - terraform init $tf_init_cli_options
         - terraform validate $tf_validation_cli_options
+        
+        # Test with TFLint
+        - tflint --module
+
+        # Terraform Plan
         - terraform plan $tf_plan_cli_options
 
     - stage: terraform apply
