@@ -160,7 +160,6 @@ resource "aws_network_interface" "management_interfaces" {
   }
 }
 
-/*
 resource "aws_network_interface" "outside_interfaces" {
   count = var.availability_zone_count * var.instances_per_az
 
@@ -184,6 +183,7 @@ resource "aws_network_interface" "inside_interfaces" {
   }
 }
 
+/*
 # Create EIPs
 resource "aws_eip" "management_eip" {
 
