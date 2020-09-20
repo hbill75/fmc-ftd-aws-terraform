@@ -160,6 +160,7 @@ resource "aws_network_interface" "management_interfaces" {
   }
 }
 
+/*
 resource "aws_network_interface" "outside_interfaces" {
   count = var.availability_zone_count * var.instances_per_az
 
@@ -183,7 +184,6 @@ resource "aws_network_interface" "inside_interfaces" {
   }
 }
 
-/*
 # Create EIPs
 resource "aws_eip" "management_eip" {
 
@@ -224,6 +224,7 @@ resource "aws_nat_gateway" "management_nat_gateway" {
     "Name" = "ASAv Management NAT Gateway ${count.index + 1}"
   }
 }
+*/
 
 # Create Management Route Table
 resource "aws_route_table" "route_table_management" {
@@ -246,6 +247,7 @@ resource "aws_route_table_association" "route_table_association_management" {
   route_table_id = aws_route_table.route_table_management.id
 }
 
+/*
 # Create Outside Route Table
 resource "aws_route_table" "route_table_outside" {
   vpc_id = aws_vpc.main.id
