@@ -86,7 +86,6 @@ resource "aws_subnet" "management_subnets" {
   }
 }
 
-/*
 # Create "Allow Internal Networks" Security Group
 resource "aws_security_group" "allow_internal_networks" {
   name        = "Allow Internal Networks"
@@ -161,6 +160,7 @@ resource "aws_network_interface" "management_interfaces" {
   }
 }
 
+/*
 resource "aws_network_interface" "outside_interfaces" {
   count = var.availability_zone_count * var.instances_per_az
 
