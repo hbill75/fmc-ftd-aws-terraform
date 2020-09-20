@@ -28,7 +28,6 @@ module "bootstrap" {
   aws_iam_policy_assume_name  = "IamPolicyAssume"
 }
 
-/*
 # Create VPC
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_subnet
@@ -38,9 +37,11 @@ resource "aws_vpc" "main" {
   }
 }
 
+/*
 locals {
   vpc_network_bits  = tonumber(split("/", var.vpc_subnet)[1])
 }
+*/
 
 # Create Internet Gateway
 resource "aws_internet_gateway" "internet_gateway" {
@@ -85,6 +86,7 @@ resource "aws_subnet" "management_subnets" {
   }
 }
 
+/*
 # Create "Allow Internal Networks" Security Group
 resource "aws_security_group" "allow_internal_networks" {
   name        = "Allow Internal Networks"
