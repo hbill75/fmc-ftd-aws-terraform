@@ -28,6 +28,7 @@ module "bootstrap" {
   aws_iam_policy_assume_name  = "IamPolicyAssume"
 }
 
+/*
 # Create VPC
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_subnet
@@ -214,7 +215,6 @@ resource "aws_network_interface" "ftd_inside_interface" {
   }
 }
 
-/*
 resource "aws_network_interface" "outside_interfaces" {
   count = var.availability_zone_count * var.instances_per_az
 
@@ -237,7 +237,6 @@ resource "aws_network_interface" "inside_interfaces" {
     "Name" = "FMC Inside Interface ${count.index + 1}"
   }
 }
-*/
 
 # Create FMC EIP
 resource "aws_eip" "fmc_management_eip" {
@@ -273,7 +272,6 @@ resource "aws_eip_association" "ftd_management_eip_association" {
   allocation_id        = aws_eip.ftd_management_eip.id
 }
 
-/*
 resource "aws_eip" "nat_gateway_eips" {
 
   vpc        = true
@@ -295,7 +293,6 @@ resource "aws_nat_gateway" "management_nat_gateway" {
     "Name" = "ASAv Management NAT Gateway ${count.index + 1}"
   }
 }
-*/
 
 # Create Management Route Table
 resource "aws_route_table" "route_table_management" {
@@ -318,7 +315,6 @@ resource "aws_route_table_association" "route_table_association_management" {
   route_table_id = aws_route_table.route_table_management.id
 }
 
-/*
 # Create Outside Route Table
 resource "aws_route_table" "route_table_outside" {
   vpc_id = aws_vpc.main.id
@@ -427,7 +423,6 @@ data "template_file" "fmc_config" {
 
   template   = file("fmc_config.txt")
 }
-*/
 
 # Create FMC Instance
 resource "aws_instance" "fmc1" {
@@ -480,7 +475,6 @@ resource "aws_instance" "ftd1" {
   }
 }
 
-/*
 # Create ASAv Instance
 resource "aws_instance" "asav" {
   count = var.availability_zone_count * var.instances_per_az
@@ -519,4 +513,3 @@ output "outside_ips" {
   value = aws_eip.outside_eips.*.public_ip
 }
 */
-
