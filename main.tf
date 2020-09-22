@@ -388,15 +388,15 @@ resource "aws_instance" "fmc1" {
 
   ami           = "ami-04c5e5e4f84fa7087"
   instance_type = var.fmc_instance_size
-  key_name = "autoscale_project"
-  tags          = {
+  key_name      = "autoscale_project"
+  tags = {
     Name = "FMC1"
   }
 
   user_data = file("fmc_config.txt")
-  
+
   network_interface {
-    device_index = 0
+    device_index         = 0
     network_interface_id = aws_network_interface.management_interfaces.id
   }
 }
