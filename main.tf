@@ -1,4 +1,4 @@
-# Require TF version to be same as or greater than 0.12.28
+# Require TF version to be same as or greater than 0.12.28.
 terraform {
   required_version = ">=0.12.28"
 
