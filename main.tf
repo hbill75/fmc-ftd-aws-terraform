@@ -28,7 +28,7 @@ module "bootstrap" {
   aws_iam_policy_assume_name  = "IamPolicyAssume"
 }
 
-/*
+
 # Create VPC
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_subnet
@@ -38,9 +38,11 @@ resource "aws_vpc" "main" {
   }
 }
 
+/*
 locals {
   vpc_network_bits  = tonumber(split("/", var.vpc_subnet)[1])
 }
+*/
 
 # Create Internet Gateway
 resource "aws_internet_gateway" "internet_gateway" {
@@ -159,6 +161,7 @@ resource "aws_network_interface" "management_interfaces" {
   }
 }
 
+/*
 resource "aws_network_interface" "outside_interfaces" {
   count = var.availability_zone_count * var.instances_per_az
 
@@ -181,6 +184,7 @@ resource "aws_network_interface" "inside_interfaces" {
     "Name" = "FMC Inside Interface ${count.index + 1}"
   }
 }
+*/
 
 # Create EIPs
 resource "aws_eip" "management_eip" {
@@ -199,6 +203,7 @@ resource "aws_eip_association" "management_eip_association" {
   allocation_id        = aws_eip.management_eip.id
 }
 
+/*
 resource "aws_eip" "nat_gateway_eips" {
   count = var.availability_zone_count
 
@@ -222,6 +227,7 @@ resource "aws_nat_gateway" "management_nat_gateway" {
     "Name" = "ASAv Management NAT Gateway ${count.index + 1}"
   }
 }
+*/
 
 # Create Management Route Table
 resource "aws_route_table" "route_table_management" {
@@ -244,6 +250,7 @@ resource "aws_route_table_association" "route_table_association_management" {
   route_table_id = aws_route_table.route_table_management.id
 }
 
+/*
 # Create Outside Route Table
 resource "aws_route_table" "route_table_outside" {
   vpc_id = aws_vpc.main.id
@@ -374,25 +381,27 @@ data "template_file" "fmc_config" {
 
   template   = file("fmc_config.txt")
 }
+*/
 
 # Create FMC Instance
 resource "aws_instance" "fmc1" {
 
   ami           = "ami-04c5e5e4f84fa7087"
   instance_type = var.fmc_instance_size
-  key_name = "autoscale_project"
-  tags          = {
+  key_name      = "autoscale_project"
+  tags = {
     Name = "FMC1"
   }
 
   user_data = file("fmc_config.txt")
-  
+
   network_interface {
-    device_index = 0
+    device_index         = 0
     network_interface_id = aws_network_interface.management_interfaces.id
   }
 }
 
+/*
 # Create ASAv Instance
 resource "aws_instance" "asav" {
   count = var.availability_zone_count * var.instances_per_az
