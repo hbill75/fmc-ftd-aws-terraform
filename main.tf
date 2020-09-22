@@ -184,7 +184,6 @@ resource "aws_network_interface" "inside_interfaces" {
     "Name" = "FMC Inside Interface ${count.index + 1}"
   }
 }
-*/
 
 # Create EIPs
 resource "aws_eip" "management_eip" {
@@ -203,7 +202,6 @@ resource "aws_eip_association" "management_eip_association" {
   allocation_id        = aws_eip.management_eip.id
 }
 
-/*
 resource "aws_eip" "nat_gateway_eips" {
   count = var.availability_zone_count
 
@@ -381,7 +379,6 @@ data "template_file" "fmc_config" {
 
   template   = file("fmc_config.txt")
 }
-*/
 
 # Create FMC Instance
 resource "aws_instance" "fmc1" {
@@ -401,7 +398,6 @@ resource "aws_instance" "fmc1" {
   }
 }
 
-/*
 # Create ASAv Instance
 resource "aws_instance" "asav" {
   count = var.availability_zone_count * var.instances_per_az
