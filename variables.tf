@@ -6,7 +6,7 @@ variable "fmc_instance_size" {
   default = "c5.4xlarge"
 }
 variable "ftd_instance_size" {
-  default = "c5.4xlarge"
+  default = "c5.xlarge"
 }
 variable "instances_per_az" {
   default = 1

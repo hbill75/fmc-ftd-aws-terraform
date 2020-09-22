@@ -1,5 +1,5 @@
 ##
-# Define variables for Azure DevOps Seed Module
+# Define variables for Terraform state backend
 ##
 
 variable "name_of_s3_bucket" {}

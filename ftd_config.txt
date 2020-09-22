@@ -1,0 +1,9 @@
+#Sensor
+{
+            "AdminPassword": "C!sco12345",
+            "Hostname": "ftd1",
+            "ManageLocally": "No",
+            "FmcIp":  "10.",
+            "FmcRegKey":"<registration_passkey>",
+            "FmcNatId":"<NAT_ID_if_required>",
+}
