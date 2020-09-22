@@ -167,7 +167,7 @@ resource "aws_network_interface" "fmc_management_interface" {
 resource "aws_network_interface" "ftd_management_interface" {
 
   subnet_id         = aws_subnet.management_subnets.id
-  private_ips       = ["10.1.2.10"]
+  private_ips       = ["10.1.2.11"]
   security_groups   = [aws_default_security_group.default.id]
   source_dest_check = false
 
@@ -180,7 +180,7 @@ resource "aws_network_interface" "ftd_management_interface" {
 resource "aws_network_interface" "ftd_metrics_interface" {
 
   subnet_id         = aws_subnet.management_subnets.id
-  private_ips       = ["10.1.2.11"]
+  private_ips       = ["10.1.2.12"]
   security_groups   = [aws_default_security_group.default.id]
   source_dest_check = false
 
@@ -192,7 +192,7 @@ resource "aws_network_interface" "ftd_metrics_interface" {
 # Create FTD Outside network interface
 resource "aws_network_interface" "ftd_outside_interface" {
 
-  subnet_id         = aws_subnet.management_subnets.id
+  subnet_id         = aws_subnet.outside_subnets.id
   private_ips       = ["10.1.0.5"]
   security_groups   = [aws_default_security_group.default.id]
   source_dest_check = false
@@ -205,7 +205,7 @@ resource "aws_network_interface" "ftd_outside_interface" {
 # Create FTD Inside network interface
 resource "aws_network_interface" "ftd_inside_interface" {
 
-  subnet_id         = aws_subnet.management_subnets.id
+  subnet_id         = aws_subnet.inside_subnets.id
   private_ips       = ["10.1.1.5"]
   security_groups   = [aws_default_security_group.default.id]
   source_dest_check = false
