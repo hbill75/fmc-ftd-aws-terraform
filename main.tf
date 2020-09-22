@@ -520,11 +520,3 @@ output "outside_ips" {
   value = aws_eip.outside_eips.*.public_ip
 }
 */
-
-output "fmc_eip" {
-  value = aws_eip.fmc_management_eip.public_ip
-}
-
-output "ftd_eip" {
-  value = aws_eip.ftd_management_eip.public_ip
-}
