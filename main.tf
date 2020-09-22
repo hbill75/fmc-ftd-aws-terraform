@@ -1,4 +1,4 @@
-# Require TF version to be same as or greater than 0.12.19
+# Require TF version to be same as or greater than 0.12.28
 terraform {
   required_version = ">=0.12.28"
 
@@ -37,12 +37,6 @@ resource "aws_vpc" "main" {
     "Name" = var.vpc_name
   }
 }
-
-/*
-locals {
-  vpc_network_bits  = tonumber(split("/", var.vpc_subnet)[1])
-}
-*/
 
 # Create Internet Gateway
 resource "aws_internet_gateway" "internet_gateway" {
@@ -131,6 +125,13 @@ resource "aws_default_security_group" "default" {
   }
 
   ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -149,15 +150,68 @@ resource "aws_default_security_group" "default" {
   }
 }
 
-# Create network interfaces
-resource "aws_network_interface" "management_interfaces" {
+# Create FMC Management network interface
+resource "aws_network_interface" "fmc_management_interface" {
 
   subnet_id         = aws_subnet.management_subnets.id
+  private_ips       = ["10.1.2.10"]
   security_groups   = [aws_default_security_group.default.id]
   source_dest_check = false
 
   tags = {
     "Name" = "FMC Management Interface"
+  }
+}
+
+# Create FTD Management network interface
+resource "aws_network_interface" "ftd_management_interface" {
+
+  subnet_id         = aws_subnet.management_subnets.id
+  private_ips       = ["10.1.2.10"]
+  security_groups   = [aws_default_security_group.default.id]
+  source_dest_check = false
+
+  tags = {
+    "Name" = "FTD Management Interface"
+  }
+}
+
+# Create FTD metrics network interface
+resource "aws_network_interface" "ftd_metrics_interface" {
+
+  subnet_id         = aws_subnet.management_subnets.id
+  private_ips       = ["10.1.2.11"]
+  security_groups   = [aws_default_security_group.default.id]
+  source_dest_check = false
+
+  tags = {
+    "Name" = "FTD Metrics Interface"
+  }
+}
+
+# Create FTD Outside network interface
+resource "aws_network_interface" "ftd_outside_interface" {
+
+  subnet_id         = aws_subnet.management_subnets.id
+  private_ips       = ["10.1.0.5"]
+  security_groups   = [aws_default_security_group.default.id]
+  source_dest_check = false
+
+  tags = {
+    "Name" = "FTD Outside Interface"
+  }
+}
+
+# Create FTD Inside network interface
+resource "aws_network_interface" "ftd_inside_interface" {
+
+  subnet_id         = aws_subnet.management_subnets.id
+  private_ips       = ["10.1.1.5"]
+  security_groups   = [aws_default_security_group.default.id]
+  source_dest_check = false
+
+  tags = {
+    "Name" = "FTD Inside Interface"
   }
 }
 
@@ -184,38 +238,55 @@ resource "aws_network_interface" "inside_interfaces" {
     "Name" = "FMC Inside Interface ${count.index + 1}"
   }
 }
+*/
 
-# Create EIPs
-resource "aws_eip" "management_eip" {
+# Create FMC EIP
+resource "aws_eip" "fmc_management_eip" {
 
   vpc        = true
   depends_on = [aws_internet_gateway.internet_gateway]
 
   tags = {
-    "Name" = "FTD Outside EIP"
+    "Name" = "FMC Management EIP"
   }
 }
 
-resource "aws_eip_association" "management_eip_association" {
+resource "aws_eip_association" "fmc_management_eip_association" {
 
-  network_interface_id = aws_network_interface.management_interfaces.id
-  allocation_id        = aws_eip.management_eip.id
+  network_interface_id = aws_network_interface.fmc_management_interface.id
+  allocation_id        = aws_eip.fmc_management_eip.id
 }
 
-resource "aws_eip" "nat_gateway_eips" {
-  count = var.availability_zone_count
+# Create FTD EIP
+resource "aws_eip" "ftd_management_eip" {
 
   vpc        = true
   depends_on = [aws_internet_gateway.internet_gateway]
 
   tags = {
-    "Name" = "ASAv Management NAT ${count.index + 1}"
+    "Name" = "FTD Management EIP"
+  }
+}
+
+resource "aws_eip_association" "ftd_management_eip_association" {
+
+  network_interface_id = aws_network_interface.ftd_management_interface.id
+  allocation_id        = aws_eip.ftd_management_eip.id
+}
+
+/*
+resource "aws_eip" "nat_gateway_eips" {
+
+  vpc        = true
+  depends_on = [aws_internet_gateway.internet_gateway]
+
+  tags = {
+    "Name" = "Management NAT EIP"
   }
 }
 
 # Create NAT Gateway
 resource "aws_nat_gateway" "management_nat_gateway" {
-  count = var.availability_zone_count
 
   allocation_id = aws_eip.nat_gateway_eips[count.index].id
   subnet_id     = aws_subnet.outside_subnets[count.index].id
@@ -332,28 +403,6 @@ resource "aws_route_table_association" "route_rable_association_management" {
   route_table_id = aws_route_table.management_route_tables[count.index].id
 }
 
-# Fiters to get the most recent BYOL ASAv image
-data "aws_ami" "cisco_fmc_lookup" {
-  most_recent = true
-
-  filter {
-    name   = "product-code"
-    values = ["bhx85r4r91ls2uwl69ajm9v1b"]
-  }
-
-  owners = ["500641172016"]
-}
-
-# Generate a random password
-resource "random_password" "password" {
-  length  = 40
-  special = true
-
-  provisioner "local-exec" {
-    command = "echo \"${random_password.password.result}\" > password.txt"
-  }
-}
-
 # Set up the ASA configuration file
 data "template_file" "asa_config" {
   count = var.availability_zone_count * var.instances_per_az
@@ -379,6 +428,7 @@ data "template_file" "fmc_config" {
 
   template   = file("fmc_config.txt")
 }
+*/
 
 # Create FMC Instance
 resource "aws_instance" "fmc1" {
@@ -394,10 +444,44 @@ resource "aws_instance" "fmc1" {
 
   network_interface {
     device_index         = 0
-    network_interface_id = aws_network_interface.management_interfaces.id
+    network_interface_id = aws_network_interface.fmc_management_interface.id
   }
 }
 
+# Create FTD Instance
+resource "aws_instance" "ftd1" {
+
+  ami           = "ami-07bbfbc09cd5e69e9"
+  instance_type = var.ftd_instance_size
+  key_name      = "autoscale_project"
+  tags = {
+    Name = "FTD1"
+  }
+
+  user_data = file("ftd_config.txt")
+
+  network_interface {
+    device_index         = 0
+    network_interface_id = aws_network_interface.ftd_management_interface.id
+  }
+
+  network_interface {
+    device_index         = 1
+    network_interface_id = aws_network_interface.ftd_metrics_interface.id
+  }
+
+  network_interface {
+    device_index         = 2
+    network_interface_id = aws_network_interface.ftd_outside_interface.id
+  }
+
+  network_interface {
+    device_index         = 3
+    network_interface_id = aws_network_interface.ftd_inside_interface.id
+  }
+}
+
+/*
 # Create ASAv Instance
 resource "aws_instance" "asav" {
   count = var.availability_zone_count * var.instances_per_az
@@ -436,3 +520,11 @@ output "outside_ips" {
   value = aws_eip.outside_eips.*.public_ip
 }
 */
+
+output "fmc_eip" {
+  value = aws_eip.fmc_management_eip.public_ip
+}
+
+output "ftd_eip" {
+  value = aws_eip.ftd_management_eip.public_ip
+}

@@ -13,7 +13,7 @@ smart_account_token = ""
 
 // Instance size
 fmc_instance_size = "c5.4xlarge"
-ftd_instance_size = "c5.large"
+ftd_instance_size = "c4.xlarge"
 
 // VPV Custom Name
 vpc_name = "FMC-FTD-Cloud"
