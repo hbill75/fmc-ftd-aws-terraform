@@ -525,6 +525,6 @@ output "fmc_eip" {
   value = aws_eip.fmc_management_eip.public_ip
 }
 
-output "fmc_eip" {
+output "ftd_eip" {
   value = aws_eip.ftd_management_eip.public_ip
 }
