@@ -248,16 +248,6 @@ resource "aws_eip_association" "ftd_management_eip_association" {
   allocation_id        = aws_eip.ftd_management_eip.id
 }
 
-resource "aws_eip" "nat_gateway_eips" {
-
-  vpc        = true
-  depends_on = [aws_internet_gateway.internet_gateway]
-
-  tags = {
-    "Name" = "Management NAT EIP"
-  }
-}
-
 # Create Management Route Table
 resource "aws_route_table" "route_table_management" {
   vpc_id = aws_vpc.main.id
