@@ -28,6 +28,7 @@ module "bootstrap" {
   aws_iam_policy_assume_name  = "IamPolicyAssume"
 }
 
+/*
 # Create VPC
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_subnet
@@ -323,7 +324,6 @@ resource "aws_instance" "ftd1" {
   }
 }
 
-/*
 output "inside_ips" {
   value = aws_network_interface.inside_interfaces.*.private_ip
 }
