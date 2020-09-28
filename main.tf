@@ -28,7 +28,6 @@ module "bootstrap" {
   aws_iam_policy_assume_name  = "IamPolicyAssume"
 }
 
-/*
 # Create VPC
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_subnet
@@ -283,7 +282,13 @@ resource "aws_instance" "fmc1" {
     Name = "FMC1"
   }
 
-  user_data = file("fmc_config.txt")
+  user_data = <<-EOF
+              #FMC
+              {
+              "AdminPassword": "C1sco12345",
+              "Hostname": "fmc1"
+              }
+              EOF
 
   network_interface {
     device_index         = 0
@@ -301,7 +306,17 @@ resource "aws_instance" "ftd1" {
     Name = "FTD1"
   }
 
-  user_data = file("ftd_config.txt")
+  user_data = <<-EOF
+            #Sensor
+            {
+            "AdminPassword": "C!sco12345",
+            "Hostname": "ftd1",
+            "ManageLocally": "No",
+            "FmcIp":  "10.1.2.10",
+            "FmcRegKey":"a1b2c3d4e5f6",
+            "FmcNatId":""
+            }
+            EOF
 
   network_interface {
     device_index         = 0
@@ -324,6 +339,7 @@ resource "aws_instance" "ftd1" {
   }
 }
 
+/*
 output "inside_ips" {
   value = aws_network_interface.inside_interfaces.*.private_ip
 }
